@@ -1,4 +1,4 @@
-package JAMAJni;
+package JAMAJniLite;
 
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
@@ -8,7 +8,7 @@ import java.text.FieldPosition;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.StreamTokenizer;
-import JAMAJni.util.*;
+import JAMAJniLite.util.*;
 
 
 /**BLAS.java*/
@@ -16,14 +16,11 @@ import JAMAJni.util.*;
 public class Matrix implements Cloneable, java.io.Serializable {
  private Matrix() {}
     static {
-     
     /* load library (which will contain blas functions.)*/
     System.loadLibrary("blas_lite");
- 
  }
     
     /**inform java virtual machine that function is defined externally*/
-    
     
     /* -----------------------
      * Class variables
@@ -628,6 +625,9 @@ public class Matrix implements Cloneable, java.io.Serializable {
      */
     
     public Matrix times (Matrix B) {
+        if (B.m != n) {
+            throw new IllegalArgumentException("Matrix dimensions must agree.");
+        }
         double[] a = this.getColumnPackedCopy();
         double[] b = B.getColumnPackedCopy();
         double[] c = new double[m * B.getColumnDimension()];
@@ -636,7 +636,40 @@ public class Matrix implements Cloneable, java.io.Serializable {
         Matrix X = new Matrix(c, m);
         return X;
     }
-    
+
+    public Matrix times (Matrix B, int TransA, int TransB) {
+        int nrow, ncol, bnrow, bncol;
+        
+        if (TransA == Matrix.TRANSPOSE.NoTrans){
+            nrow = m;
+            ncol = n;
+        }
+        else{
+            nrow = n;
+            ncol = m;
+        }
+        
+        if (TransB == Matrix.TRANSPOSE.NoTrans){
+            bnrow = B.m;
+            bncol = B.n;
+        }
+        else{
+            bnrow = B.n;
+            bncol = B.m;
+        }
+
+        if (ncol != bnrow) {
+            throw new IllegalArgumentException("Matrix dimensions must agree.");
+        }
+
+        double[] a = this.getColumnPackedCopy();
+        double[] b = B.getColumnPackedCopy();
+        double[] c = new double[nrow * bncol];
+        dgemm(Matrix.LAYOUT.ColMajor, TransA, TransB,
+              nrow, bncol, ncol, 1, a, b, 0, c);
+        Matrix X = new Matrix(c, nrow);
+        return X;
+    }
     
     
     /* Tentatively made by Diyang */
@@ -657,6 +690,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     
     /* Using dtrmm, C=alpha*op(A)*B or  C=alpha*B*op(A)        */
     public  Matrix tritimes (Matrix B, double alpha){
+        checkMatrixDimensions(B);
         double[] a = this.getColumnPackedCopy();
         double[] b = B.getColumnPackedCopy();
         /* need to check if A is square matrix*/
