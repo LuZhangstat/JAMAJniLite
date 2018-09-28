@@ -48,8 +48,8 @@ public class EigenvalueDecomposition  implements java.io.Serializable {
     private double[] VR;
     
     private int[] info = new int[]{0};
-    private double[] work = new double[1000];
-    private int lwork = 3;
+    private double[] work = new double[1];
+    private int lwork = -1;
 
 
     /* ------------------------
@@ -81,7 +81,13 @@ public class EigenvalueDecomposition  implements java.io.Serializable {
         if (issymmetric) {
             char jobz = EigenvalueDecomposition.JOBV.Compute;
             char uplo = EigenvalueDecomposition.UPLO.Upper;
-            lwork = 50;
+            /** Query optimal working array(s) size */
+            lwork = -1;
+            work = new double[1];
+            dsyev(matrix_layout, jobz, uplo, n, a, lda, wr, work, lwork, info);
+            /** Calculation */
+            lwork = (int) work[0];
+            work = new double[lwork];
             dsyev(matrix_layout, jobz, uplo, n, a, lda, wr, work, lwork, info);
         } else{
             char jobvl = EigenvalueDecomposition.JOBV.NoCompute;
@@ -89,7 +95,13 @@ public class EigenvalueDecomposition  implements java.io.Serializable {
             double[] vl = new double[1];
             int ldvl = 1;
             int ldvr = n;
-            lwork = 30;
+            /** Query optimal working array(s) size */
+            lwork = -1;
+            work = new double[1];
+            dgeev(matrix_layout, jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, VR, ldvr, work, lwork, info);
+            /** Calculation */
+            lwork = (int) work[0];
+            work = new double[lwork];
             dgeev(matrix_layout, jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, VR, ldvr, work, lwork, info);
         }
     }

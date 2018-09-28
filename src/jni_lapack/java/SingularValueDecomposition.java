@@ -35,9 +35,9 @@ public class SingularValueDecomposition implements java.io.Serializable {
     /** Row and column dimensions, and min(m, n).*/
     private int m, n, l;
     
-    double[] work = new double[1000];
-    private int lwork = 50;
-    int[] info = new int[]{0};
+    private int[] info = new int[]{0};
+    private double[] work = new double[1];
+    private int lwork = -1;
 
  /* ------------------------
   * Constructor
@@ -57,6 +57,13 @@ public class SingularValueDecomposition implements java.io.Serializable {
         int ldu = m;
         int ldvt = n;
         double[] superb = new double[l];
+        /** Query optimal working array(s) size */
+        lwork = -1;
+        work = new double[1];
+        dgesvd(matrix_layout, jobu, jobvt, m, n, a, lda, s, u, ldu, v, ldvt, work, lwork, info);
+        /** Calculation */
+        lwork = (int) work[0];
+        work = new double[lwork];
         dgesvd(matrix_layout, jobu, jobvt, m, n, a, lda, s, u, ldu, v, ldvt, work, lwork, info);
     }
 

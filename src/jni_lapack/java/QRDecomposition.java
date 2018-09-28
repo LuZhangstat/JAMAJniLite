@@ -28,11 +28,9 @@ public class QRDecomposition implements java.io.Serializable {
     /** Array for internal storage of decomposition.*/
     private double[] QR;
     private double[] tau;
-
     private int[] info = new int[]{0};
-    double[] work = new double[1000];
-    int lwork = 50;
-    int[] iwork = new int[24];
+    private double[] work = new double[1];
+    private int lwork = -1;
     
     /** Row and column dimensions, and min(m, n).*/
     private int m, n, l;
@@ -40,6 +38,11 @@ public class QRDecomposition implements java.io.Serializable {
     /* ------------------------
      Constructor
      * ------------------------ */
+
+    /** Check for symmetry, then construct the eigenvalue decomposition
+     Structure to access D and V.
+     @exception  IllegalArgumentException  Matrix row dimensions must agree.
+     */
     public QRDecomposition (Matrix Arg) {
 	    m = Arg.getRowDimension();
 	    n = Arg.getColumnDimension();
@@ -49,6 +52,13 @@ public class QRDecomposition implements java.io.Serializable {
 	    int lda = m;
         tau = new double[l];
 	    int matrix_layout = QRDecomposition.LAYOUT.ColMajor;
+        /** Query optimal working array(s) size */
+        lwork = -1;
+        work = new double[1];
+        dgeqrf(matrix_layout, m, n, QR, lda, tau, work, lwork, info);
+        /** Calculation */
+        lwork = (int) work[0];
+        work = new double[lwork];
         dgeqrf(matrix_layout, m, n, QR, lda, tau, work, lwork, info);
         
     }
@@ -97,6 +107,13 @@ public class QRDecomposition implements java.io.Serializable {
         for(int i = 0; i < (m * n); i++){
             Q[i] = QR[i];
         }
+        /** Query optimal working array(s) size */
+        lwork = -1;
+        work = new double[1];
+        dorgqr(matrix_layout, m, n, k, Q, lda, tau, work, lwork, info);
+        /** Calculation */
+        lwork = (int) work[0];
+        work = new double[lwork];
         dorgqr(matrix_layout, m, n, k, Q, lda, tau, work, lwork, info);
         return new Matrix(Q, m);
         /** here n has to be less than m; otherwise dorgqr will fail ?*/
@@ -127,8 +144,15 @@ public class QRDecomposition implements java.io.Serializable {
         char side = QRDecomposition.SIDE.Left;
         char trans = QRDecomposition.TRANSPOSE.Trans;
         int k = l, lda = m, ldb = m;
+        /** Query optimal working array(s) size */
+        lwork = -1;
+        work = new double[1];
         dormqr(matrix_layout, side, trans, m, nx, k, QR, lda, tau, b, ldb, work, lwork, info);
-        
+        /** Calculation */
+        lwork = (int) work[0];
+        work = new double[lwork];
+        dormqr(matrix_layout, side, trans, m, nx, k, QR, lda, tau, b, ldb, work, lwork, info);
+
         // Solve R*X = Y;
         char uplo = QRDecomposition.UPLO.Upper;
         char transa = QRDecomposition.TRANSPOSE.NoTrans;

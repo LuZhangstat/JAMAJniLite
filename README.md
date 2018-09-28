@@ -7,7 +7,17 @@ Build Instructions
 
 * JAMAJniLite requires the installation of lapack and blas. (The command in Ubuntu is "sudo apt-get install libblas-dev liblapack-dev"). 
 
-* To compile the package, enter src directory and execute "make". Notice that you may have to change the extension of generated libraries in the Makefile based on your operating system. On OS X you have to change all the extensions of dynamic library to .dylib while on Linux the corresponding extensions are .so or .a. 
+* To compile the package, enter src directory and copy the makefile based on the operating system.
+
+For Linux user, use the following commands:
+cd src
+cp Makefile.linux Makefile
+Make
+
+For Mac user, use the following commands:
+cd src
+cp Makefile.mac Makefile
+Make
 
 * To clean generated file, type “make clean” on the command line.  
 
