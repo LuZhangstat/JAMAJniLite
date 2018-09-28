@@ -10,22 +10,26 @@ Build Instructions
 * To compile the package, enter src directory and copy the makefile based on the operating system.
 
 For Linux user, use the following commands:
+```
 cd src
 cp Makefile.linux Makefile
 Make
+```
 
 For Mac user, use the following commands:
+```
 cd src
 cp Makefile.mac Makefile
 Make
+```
 
-* To clean generated file, type “make clean” on the command line.  
+* To clean generated file, type `make clean` on the command line.  
 
-* If you would like to use openblas library, you can install openblas by command "sudo apt-get install libopenblas-dev". Then you need to replace all the "-llapack" and "-lblas" by the "-lopenblas" in Makefile.
+* For linus user, if you would like to use openblas library, you can install openblas by command `sudo apt-get install libopenblas-dev`. Then you need to replace all the `-llapack` and `-lblas` by the `-lopenblas` in Makefile.
 
 Running the tests
 -----------------
-* For testing, enter test directory and execute “make” . If you want to clean testing results and all class files, type "make clean". 
+* For testing, enter test directory and execute `make` . If you want to clean testing results and all class files, type `make clean`. 
 
 * There are four test files. The "JAMAJniLiteTest.java" will test all the methods in JAMAJniLite and report the errors. The "JAMAJniLiteExamples.java" will provide specific examples for basic linear algebra operations. It can clearly show you how to use methods defined in JAMAJniLite. If you are interested in how to use functions in blas and lapack libraries to do matrix operations, the "JAMAJniLiteExamplesBLAS.java" and "JAMAJniLiteExamplesLAPACK.java" will give you specific examples. However, it is not necessary to go into blas and lapack if you just want to be a user of JAMAJniLite.
 
