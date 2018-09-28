@@ -5,7 +5,7 @@ JAMAJniLite is a sibling package of JAMAJni. It is a JAVA package providing a ja
 Build Instructions
 ------------------
 
-* JAMAJniLite requires the installation of lapack and blas. (The command in Ubuntu is "sudo apt-get install libblas-dev liblapack-dev"). 
+* JAMAJniLite requires the installation of lapack and blas. (The command in Ubuntu is `sudo apt-get install libblas-dev liblapack-dev`). 
 
 * To compile the package, enter src directory and copy the makefile based on the operating system.
 
